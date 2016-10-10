@@ -10,4 +10,4 @@ To speed up computations, I "MEXed" some of the MATLAB codes (i.e. they are writ
 ### References
 Koopman, S. J., A. Lucas and M. Scharth (2015), "Numerically Accelerated Importance Sampling for Nonlinear Non-Gaussian State Space Models", _Journal of Business and Economic Statistics_, 33, 114-127.
 
-Richard, J. and W. Zhang (2007), "Efficient High-Dimensional Importance Sampling", __Journal of Econometrics__, 141, 1385-1411.
+Richard, J. and W. Zhang (2007), "Efficient High-Dimensional Importance Sampling", _Journal of Econometrics_, 141, 1385-1411.
