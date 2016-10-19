@@ -2,7 +2,7 @@ function par_SV_trans = transform_param_SV(par_SV, mode)
     par_SV_trans = par_SV;
     d = size(par_SV,2);
     
-%     if strcmp(mode, 'opt') % trnsformation for optimalisation --> unbounded
+%     if strcmp(mode, 'opt') % transformation for optimization --> unbounded
 %         par_SV(1,2) = par_SV(1,2)/2 + 0.5;
 %         par_SV_trans(1,2) = log(par_SV(1,2)/(1-par_SV(1,2)));
 %         par_SV_trans(1,3) = log(par_SV(1,3));
@@ -18,7 +18,7 @@ function par_SV_trans = transform_param_SV(par_SV, mode)
 %         end
 %     end
     switch mode
-        case 'sim_opt' % trnsformation for optimalisation --> unbounded
+        case 'sim_opt' % transformation for optimization --> unbounded
             par_SV(1,2) = par_SV(1,2)/2 + 0.5;
             par_SV_trans(1,2) = log(par_SV(1,2)/(1-par_SV(1,2)));
             par_SV_trans(1,3) = log(par_SV(1,3));
