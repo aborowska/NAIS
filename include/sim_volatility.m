@@ -1,11 +1,14 @@
-function y = sim_SVt(par_SV,n)
+function y = sim_volatility(par_SV,n)
 % simple, one-factor univariate SV model
+	d = size(par_SV,2);
+	
     c = par_SV(1,1);
     phi = par_SV(1,2);
     s2 = par_SV(1,3);
     P1 = s2/(1-phi^2);
-    nu = par_SV(1,4);
-    
+	if (d == 4)
+		nu = par_SV(1,4);
+    end
     U = ones(n,1);   
 
     % the state alpha  
@@ -27,5 +30,9 @@ function y = sim_SVt(par_SV,n)
     sigma2 = exp(theta);
 
     % the time series of log-returns y
-    y = sqrt(sigma2.*(nu-2)./nu).*trnd(nu, n, 1);
+	if (d == 3)
+	    y = sqrt(sigma2).*randn(n,1);
+	else
+		y = sqrt(sigma2.*(nu-2)./nu).*trnd(nu, n, 1);
+	end
 end

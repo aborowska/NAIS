@@ -4,8 +4,8 @@ addpath(genpath('include/'));
 s = RandStream('mt19937ar','Seed',1);
 RandStream.setGlobalStream(s); 
 
-data_on = true; % data_on = false;
-model = 'sv'; % 'svt'
+data_on = false; % data_on = false;
+model = 'sc'; % 'sct'
 
 %% NAIS control parameters
 cont.M = 20; % number of the Gauss-Hermite nodes
@@ -24,28 +24,27 @@ if data_on
 else
     cont.data_on = 'sim';
 end 
-cont.print = false; % true for printing iteration info in estimation  
 
 %% Observations
 if data_on % Use data
-%   y = csvread('IBM_ret.csv');
-    y = csvread('GSPC_ret_updated_short_sv.csv'); % the most recent 5 years
-%   y = csvread('GSPC_ret_updated.csv'); % crisis data    
-    y = 100*y;
-    n = length(y);
+    y = load('ibm_ccola_rets.txt'); % for Patton's copula toolbox
+    T = size(y,2);
 else % Simulation
-    if strcmp(model, 'sv')
-%         par_SV_sim = [0.5, 0.98, 0.15^2];
-        par_SV_sim = [-10, 0.95, 0.25]; 
+    if strcmp(model, 'sc')
+        mu_sim = [0.02, 0.10, 0.98];       
     else
-        par_SV_sim = [0.5, 0.98, 0.15^2, 10];
+        mu_sim = [0.02, 0.10, 0.98, 5];       
     end
-    n = 5000;
-    y = sim_volatility(par_SV_sim,n); % simulated daily log-returns
+    mu_true = mu_init;
+    T = 2500;
+    N = 1;
+    link = 1;
+    [u, alpha, theta] = simulate_copula_ss(mu_sim, T, N, link);
+
 end
 
 %% Initialisation 
-options=optimset('display','iter','TolFun',1e-5,'LargeScale','off','TolX',1e-5,'maxiter',500,'HessUpdate','bfgs','FinDiffType','central');
+options = optimset('display','iter','TolFun',1e-5,'LargeScale','off','TolX',1e-5,'maxiter',500,'HessUpdate','bfgs','FinDiffType','central');
 
 %     par_SV = [c, phi, sigma2_eta, nu]
 if strcmp(model,'sv')
@@ -89,9 +88,7 @@ std_corr = sqrt(diag(V_SV_corr_opt));
 
 % Choose the correct file name! (corresponding to the dataset)
 if data_on
-%     save 'results/SML_ibm.mat' 'par_SV_opt' 'V_SV_corr_opt';  
-   save 'results/SML_gspc_updated_short_sv.mat' 'par_SV_opt' 'V_SV_corr_opt' 'theta_smooth';  
-%    save 'results/SML_gspc_updated.mat' 'par_SV_opt' 'V_SV_corr_opt' 'theta_smooth';  
-else
+    save 'results/SML_gspc_updated_short_sv.mat' 'par_SV_opt' 'V_SV_corr_opt' 'theta_smooth';  
+ else
     save 'results/SML_sim.mat' 'par_SV_opt' 'V_SV_corr_opt';
 end
