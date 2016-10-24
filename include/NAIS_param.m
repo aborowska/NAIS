@@ -1,7 +1,8 @@
 function par_NAIS = NAIS_param(par_NAIS, y, par_SV, cont)
     % Algorithm 2: Efficient importance parameters using NAIS
+    d = size(param_SV,2);
     n = length(y);
-    Un = ones(n,1);
+%     Un = ones(n,1);
       
     M = cont.M;         % number of the Gauss-Hermite nodes
     tol = cont.tol;     % convergence tolerance
@@ -16,7 +17,7 @@ function par_NAIS = NAIS_param(par_NAIS, y, par_SV, cont)
     err = 1;
     iter = 0;
     
-    if (cont.err == 't')
+    if (d == 4)
         nu = par_SV(1,4);
         pdf_const = log(gamma((nu+1)/2)) - log(gamma(nu/2)) - 0.5*log(nu-2);
     end
@@ -67,7 +68,7 @@ function par_NAIS = NAIS_param(par_NAIS, y, par_SV, cont)
 %         end
 
 %         [b_new, C_new] = EIS_reg_vec(y, theta_smooth, V_smooth, z, w, tol_C);
-        if (cont.err == 'n')
+        if (d == 3)
             [b_new, C_new] = EIS_reg_vec(y, theta_smooth, V_smooth, z, w, tol_C);
         else % if cont.err == 't'
             [b_new, C_new] = EIS_reg_vec_t(y, theta_smooth, V_smooth, z, w, tol_C, nu, pdf_const);

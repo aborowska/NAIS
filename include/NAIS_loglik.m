@@ -1,6 +1,7 @@
 function [lnL_hat, theta_smooth] = NAIS_loglik(par_SV_trans, par_NAIS, y, S, cont, RND)
     % Algorithm 1: IS using an approximation linear state model
     % (with antithetic variables for variance reduction)
+    d = size(param_SV_trans,2);    
     n = length(y);
     par_SV =  transform_param_SV(par_SV_trans, [cont.data_on,'_back']);
     fprintf('%6.4f\t',par_SV); 
@@ -40,7 +41,7 @@ function [lnL_hat, theta_smooth] = NAIS_loglik(par_SV_trans, par_NAIS, y, S, con
        theta_sim = IS_sim(S, y_star, eps_smooth, v, F_inv, K, L, par_KFS, RND);
 
         % compute the logweights
-        if (cont.err == 'n')
+        if (d == 3) % if (cont.err == 'n')
             lnP =  -0.5*(log(2*pi) +  theta_sim  + repmat(y.^2,1,S)./exp(theta_sim));
 %             lnP =  -0.5*(theta_sim  + repmat(y.^2,1,S)./exp(theta_sim));
         else % if (cont.err == 't')

@@ -1,6 +1,6 @@
 function par_NAIS = NAIS_param2(cont, par_NAIS, y, par_SV)
 % Algorithm 2: Efficient importance parameters using NAIS
-
+%     d = size(param_SV,2);
 %% Set parameters
     c = par_SV.c;
 %     phi = par_SV.phi;

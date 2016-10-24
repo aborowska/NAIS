@@ -1,3 +1,15 @@
+% This is a very early ilustration of the NAIS algorithm (a really explicit one). 
+% A more up-to-date version is in estimate_SV.m file (based on MEXed functions).
+% No parameter estimation, just construction of the optimal IS parameters
+% given the chosen SV model parameters.
+% There is also some plots generation.
+
+clear all
+addpath(genpath('include/'));
+
+s = RandStream('mt19937ar','Seed',1);
+RandStream.setGlobalStream(s); 
+
 par_SV.c = 1;
 par_SV.phi = 0.98;
 par_SV.sigma2 = 0.0225;

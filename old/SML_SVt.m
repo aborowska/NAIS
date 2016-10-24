@@ -1,5 +1,5 @@
 clear all
-addpath(genpath('include/'));
+addpath(genpath('../include/'));
 
 s = RandStream('mt19937ar','Seed',1);
 RandStream.setGlobalStream(s); 
@@ -15,7 +15,10 @@ cont.tol_C = 1e-5; % tolerance for the variance
 cont.GH.z = -cont.GH.z;
 cont.GH.h = cont.GH.h.*exp(0.5*(cont.GH.z).^2);
 cont.iter_max = 20;
-cont.err = 't';
+% cont.err = 't';
+cont.S = 200;  % number of simulated trajectories in IS estimation
+% then:  RND are normal random numbers, used in SimSmooth, for S/2 simulation paths; 
+% 2 columns for each simulation; S/2 simulations are run one column for eta and one for epsilon; 
 if data_on
     cont.data_on = 'est'; 
 else
@@ -58,8 +61,8 @@ end
 % 
 % for ii = 1:MC
     %% Optimisation
-    S = 200; % number of simulated trajectories in IS estimation
-    RND = randn(n,S/2);   % normal random numbers; used in SimSmooth, for S/2 simulation paths; 
+%     S = 200; % number of simulated trajectories in IS estimation
+%     RND = randn(n,S/2);   % normal random numbers; used in SimSmooth, for S/2 simulation paths; 
                         % 2 columns for each simulation; S/2 simulations are run
                         % one column for eta and one for epsilon; 
     options = optimset('display','iter','TolFun',1e-5,'LargeScale','off','TolX',1e-5,'maxiter',500,'HessUpdate','bfgs','FinDiffType','central');
