@@ -24,6 +24,7 @@ if data_on
 else
     cont.data_on = 'sim';
 end 
+cont.print = false; % true for printing iteration info in estimation  
 
 
 %% Observations

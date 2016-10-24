@@ -1,11 +1,14 @@
 function [lnL_hat, theta_smooth] = NAIS_loglik(par_SV_trans, par_NAIS, y, S, cont, RND)
     % Algorithm 1: IS using an approximation linear state model
     % (with antithetic variables for variance reduction)
-    d = size(param_SV_trans,2);    
+    d = size(par_SV_trans,2);    
     n = length(y);
     par_SV =  transform_param_SV(par_SV_trans, [cont.data_on,'_back']);
-    fprintf('%6.4f\t',par_SV); 
     
+    if cont.print
+        fprintf('%6.4f\t',par_SV); 
+        fprintf('\n'); 
+    end
     % Algorithm 2: Efficient importance parameters via NAIS
     par_NAIS = NAIS_param(par_NAIS, y, par_SV, cont); 
 
@@ -74,5 +77,7 @@ function [lnL_hat, theta_smooth] = NAIS_loglik(par_SV_trans, par_NAIS, y, S, con
         lnL_hat = lng_y; % if no simulation: only the loglik of the approx. Gaussian model
     end
     lnL_hat = - lnL_hat/n; % /n for stabilty? minus cause we will minimise the MINUS loglig
-    fprintf('The estimated (minus) loglikelihood is: %6.4f.\n',lnL_hat)
+    if cont.print
+        fprintf('The estimated (minus) loglikelihood is: %6.4f.\n',lnL_hat)
+    end
 end

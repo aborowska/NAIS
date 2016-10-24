@@ -1,7 +1,6 @@
 function [par_SV, hessian, hessian_tr, theta_smooth] = estimate_NAIS(par_SV_init, y, fn_jacobian, cont, options)
     n = length(y);
-    cont.S = 200; % number of simulated trajectories in IS estimation
-    RND = randn(n,S/2);   % normal random numbers; used in SimSmooth, for S/2 simulation paths; 
+    RND = randn(n,cont.S/2);   % normal random numbers; used in SimSmooth, for S/2 simulation paths; 
  
     %%  NAIS algorithm for selecting the importance parameter set [b,C]
     par_init.b = zeros(n,1);           
@@ -10,11 +9,11 @@ function [par_SV, hessian, hessian_tr, theta_smooth] = estimate_NAIS(par_SV_init
 
     %% MAIN optimisation
     par_SV_init_trans = transform_param_SV(par_SV_init,  [cont.data_on,'_opt']);
-    NAIS_max = @(par_SV_trans) NAIS_loglik(par_SV_trans, par_NAIS, y, S, cont, RND);
+    NAIS_max = @(xx) NAIS_loglik(xx, par_NAIS, y, cont.S, cont, RND);
     
     [par_SV_trans,~,~,~,~, hessian]= fminunc(NAIS_max, par_SV_init_trans, options);
  
-    jaco_inv = fn_jacobian(theta_trans);
+    jaco_inv = fn_jacobian(par_SV_trans);
     hessian_tr = jaco_inv*(n*hessian)*jaco_inv; 
     
     if (nargout == 4)

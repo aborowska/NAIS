@@ -1,5 +1,5 @@
 % This is a very early ilustration of the NAIS algorithm (a really explicit one). 
-% A more up-to-date version is in estimate_SV.m file (based on MEXed functions).
+% A more up-to-date version is in Main_SML_SV.m file (based on MEXed functions).
 % No parameter estimation, just construction of the optimal IS parameters
 % given the chosen SV model parameters.
 % There is also some plots generation.
@@ -31,6 +31,7 @@ par_init.C = ones(n,1);
 cont.M = 30; % number of the Gauss-Hermite nodes
 cont.tol = 0.0001; % convergence tolerance
 cont.fast = true;
+cont.print = false; % true for printing iteration info in estimation  
 
 % Algorithm 2: Efficient importance parameters via NAIS
 par_NAIS = NAIS_param(cont,par_init,y,par_SV);

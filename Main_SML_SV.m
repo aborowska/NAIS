@@ -24,6 +24,7 @@ if data_on
 else
     cont.data_on = 'sim';
 end 
+cont.print = false; % true for printing iteration info in estimation  
 
 %% Observations
 if data_on % Use data
@@ -44,7 +45,7 @@ else % Simulation
 end
 
 %% Initialisation 
-options = optimset('display','iter','TolFun',1e-5,'LargeScale','off','TolX',1e-5,'maxiter',500,'HessUpdate','bfgs','FinDiffType','central');
+options=optimset('display','iter','TolFun',1e-5,'LargeScale','off','TolX',1e-5,'maxiter',500,'HessUpdate','bfgs','FinDiffType','central');
 
 %     par_SV = [c, phi, sigma2_eta, nu]
 if strcmp(model,'sv')

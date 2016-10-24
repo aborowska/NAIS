@@ -1,6 +1,6 @@
 function par_NAIS = NAIS_param(par_NAIS, y, par_SV, cont)
     % Algorithm 2: Efficient importance parameters using NAIS
-    d = size(param_SV,2);
+    d = size(par_SV,2);
     n = length(y);
 %     Un = ones(n,1);
       
@@ -82,5 +82,7 @@ function par_NAIS = NAIS_param(par_NAIS, y, par_SV, cont)
         par_NAIS.C = C_new;
         iter = iter + 1;
     end
-    fprintf('NAIS_param iter #: %d.\n', iter)
+    if cont.print
+        fprintf('NAIS_param iter #: %d.\n', iter)
+    end
 end
