@@ -1,35 +1,39 @@
-function [u_sim, f_true, rho_true] = simulate_copula_ss(mu_true, T, N, link)
-    d = size(mu_true,2); 
+function [u_sim, theta, rho] = sim_copula(par_true, T, N, link)
+    d = size(par_true,2); 
 
-    c = mu_true(:,1);
-    sigma_nu = mu_true(:,2);
-    phi = mu_true(:,3);
-    a1 = c./(1-phi);
-    P1 = sigma_nu.^2./(1-phi.^2);    
+    c = par_true(:,1);
+    phi = par_true(:,2);
+    sigma2 = par_true(:,3);
+
+    a1 = 0; %c./(1-phi);
+    P1 = sigma2./(1-phi.^2);    
     if (d == 4)
-        nu = mu_true(:,4);
+        nu = par_true(:,4);
     end
     if link
         transf = @(aa) (1 - exp(-aa))./(1 + exp(-aa));
     else
         transf = @(aa) (exp(2*aa)-1)./(exp(2*aa)+1);        
     end 
-    f_true = zeros(N,T);
+    alpha = zeros(N,T);
     u_sim = zeros(T,2,N);   
     
-    f_true(:,1) = a1 + sqrt(P1).*randn(N,1);
+    alpha(:,1) = a1 + sqrt(P1).*randn(N,1);
 
     for ii = 2:T            
-        f_true(:,ii) = c + phi.*f_true(:,ii-1) + sigma_nu.*randn(N,1);
-    end         
-    rho_true = transf(f_true);
+        alpha(:,ii) = phi.*alpha(:,ii-1) + sqrt(sigma2).*randn(N,1);
+    end   
+    
+    theta = c + alpha;
+    
+    rho = transf(theta);
     if (d == 3)        
         for jj = 1:N
-            u_sim(:,:,jj) = bi_copula_n_rnd(rho_true(jj,:));
+            u_sim(:,:,jj) = bi_copula_n_rnd(rho(jj,:));
         end
     else
         for jj = 1:N
-            u_sim(:,:,jj) = bi_copula_t_rnd(rho_true(jj,:), nu);
+            u_sim(:,:,jj) = bi_copula_t_rnd(rho(jj,:), nu);
         end
     end   
 

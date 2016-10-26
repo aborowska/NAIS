@@ -13,7 +13,7 @@ function y = sim_volatility(par_SV,n)
 
     % the state alpha  
     alpha = zeros(n,1);
-    alpha(1,1) = P1*randn;
+    alpha(1,1) = sqrt(P1)*randn;
     
     eta = sqrt(s2)*randn(n,1);
     T = phi*U;
