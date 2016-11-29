@@ -1,7 +1,7 @@
 function [lnL_hat, theta_smooth] = NAIS_loglik(par_SV_trans, par_NAIS, y, S, cont, RND)
     % Algorithm 1: IS using an approximation linear state model
     % (with antithetic variables for variance reduction)
-    d = size(par_SV_trans,2);    
+%     d = size(par_SV_trans,2);    
     n = length(y);
     par_SV =  transform_param_ss(par_SV_trans, [cont.data_on,'_back']);
     
@@ -21,9 +21,11 @@ function [lnL_hat, theta_smooth] = NAIS_loglik(par_SV_trans, par_NAIS, y, S, con
 
     % Given the optimal IS parameters obtain the smoothed mean of signal for
     % the importance model    
-    par_KFS = IS_Model(par_NAIS, par_SV);
-    [theta_smooth, ~, v, F_inv, eps_smooth, K, L] = KFS(y_star,par_KFS); % F is H
-%     [theta_smooth, ~, v, F] = KFS(y_star,par_KFS); % F is H
+    par_KFS = IS_Model_multi(par_NAIS, par_SV, cont);
+%     par_KFS = IS_Model(par_NAIS, par_SV);
+    [theta_smooth, ~, v, F_inv, eps_smooth, K, L] = KFS_multi(y_star, par_KFS); % F is H
+%     [theta_smooth, ~, v, F_inv, eps_smooth, K, L] = KFS(y_star, par_KFS); % F is H
+% %     [theta_smooth, ~, v, F] = KFS(y_star,par_KFS); % F is H
 
 
     %% LogLikelihood evaluation
@@ -44,10 +46,10 @@ function [lnL_hat, theta_smooth] = NAIS_loglik(par_SV_trans, par_NAIS, y, S, con
        theta_sim = IS_sim(S, y_star, eps_smooth, v, F_inv, K, L, par_KFS, RND);
 
         % compute the logweights
-        if (d == 3) % if (cont.err == 'n')
+        if strcmp(cont.err,'n')
             lnP =  -0.5*(log(2*pi) +  theta_sim  + repmat(y.^2,1,S)./exp(theta_sim));
 %             lnP =  -0.5*(theta_sim  + repmat(y.^2,1,S)./exp(theta_sim));
-        else % if (cont.err == 't')
+        else % if strcmp('cont.err','t')
             nu = par_SV(1,4);
             p_const = log(gamma((nu+1)/2)) - log(gamma(nu/2)) - 0.5*log(nu-2); %% pconst
             y2 = repmat(y.^2,1,S)./((nu-2).*exp(theta_sim));
@@ -76,7 +78,8 @@ function [lnL_hat, theta_smooth] = NAIS_loglik(par_SV_trans, par_NAIS, y, S, con
     else
         lnL_hat = lng_y; % if no simulation: only the loglik of the approx. Gaussian model
     end
-    lnL_hat = - lnL_hat/n; % /n for stabilty? minus cause we will minimise the MINUS loglig
+    lnL_hat = - lnL_hat/n; % /n for stabilty; minus cause we will minimise the MINUS loglig
+    
     if cont.print
         fprintf('The estimated (minus) loglikelihood is: %6.4f.\n',lnL_hat)
     end

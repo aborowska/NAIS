@@ -1,5 +1,5 @@
 % function alpha_cond = SimSmooth(alpha_smooth_obs,par_KFS,RND)
-function eps_sim = SimSmooth(S, nu, F_inv, eps_smooth, K, L, par_KFS, RND)
+function eps_sim = SimSmooth_multi(S, nu, F_inv, eps_smooth, K, L, par_KFS, RND)
 %%     % simulation smoothing for a linear Gaussian SSM
        % de Jong-Shephard method for simulation of disturbances
        % i.e. conditional drawing given the observed sample y_obs
@@ -31,25 +31,28 @@ function eps_sim = SimSmooth(S, nu, F_inv, eps_smooth, K, L, par_KFS, RND)
 % %         alpha_cond = alpha_un + alpha_smooth_obs - alpha_smooth_un;
 
 %% conditional simulation of disturbances
-    [n, ~] = size(eps_smooth);
+    [n, m] = size(K);
     H = par_KFS.H;
     Z = par_KFS.Z;  
     
-    r = zeros(1,S/2);
+    r = zeros(S/2,m); % dimensions: for consistency with KFS_multi
     eps_bar = zeros(n,S/2);
+    N = zeros(m,m);
     eps_sim = zeros(n,S);
-    N = 0;
-    ind = 1:2:S-1;
+    % antithetics
+    ind = 1:2:S-1; 
     
     for ii = n:-1:1
-        C = H(ii,1) - H(ii,1)*(F_inv(ii,1) + N*K(ii,1)^2)*H(ii,1);
-        eps_bar(ii,:) = H(ii,1)*(F_inv(ii,1)*nu(ii,1) - K(ii,1)*r);
+        C = H(ii,1) - H(ii,1)*(F_inv(ii,1) + K(ii,:)*N*K(ii,:)')*H(ii,1);
+        eps_bar(ii,:) = H(ii,1)*(nu(ii,1)*F_inv(ii,1) - r*K(ii,:)');
         w = sqrt(C)*RND(ii,:);
         eps_sim(ii,ind) = eps_bar(ii,:) + w; 
         eps_sim(ii,ind+1) = 2*eps_smooth(ii,1) - eps_sim(ii,ind);
         
-        W = H(ii,1)*(F_inv(ii,1)*Z(ii,1) - K(ii,1)*N*L(ii,1));
-        r = Z(ii,1)*F_inv(ii,1)*nu(ii,1) - W*w/C + L(ii,1)*r;
-        N = Z(ii,1)*F_inv(ii,1)*Z(ii,1) + W*W/C + N*L(ii,1)^2;
+        L_tmp = squeeze(L(ii,:,:));
+        W = H(ii,1)*(Z*F_inv(ii,1) - L_tmp*N*K(ii,:)'); % mx1
+        r = bsxfun(@plus, - w'*W'/C + r*L_tmp', nu(ii,1)*F_inv(ii,1)*Z');
+        N = Z*F_inv(ii,1)*Z' + W*W'/C + L_tmp*N*L_tmp';
     end
+         
 end

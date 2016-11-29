@@ -3,9 +3,9 @@ function [par_SV, hessian, hessian_tr, theta_smooth] = estimate_NAIS(par_SV_init
     RND = randn(n,cont.S/2);   % normal random numbers; used in SimSmooth, for S/2 simulation paths; 
  
     %%  NAIS algorithm for selecting the importance parameter set [b,C]
-    par_init.b = zeros(n,1);           
-    par_init.C = ones(n,1);           % V = (Z*P1*Z')';
-    par_NAIS = NAIS_param(par_init, y, par_SV_init, cont); % Algorithm 2: Efficient importance parameters via NAIS
+    par_NAIS_init.b = zeros(n,1);           
+    par_NAIS_init.C = ones(n,1);           % V = (Z*P1*Z')';
+    par_NAIS = NAIS_param(par_NAIS_init, y, par_SV_init, cont); % Algorithm 2: Efficient importance parameters via NAIS
 
     %% MAIN optimisation
     par_SV_init_trans = transform_param_ss(par_SV_init,  [cont.data_on,'_opt']);

@@ -4,11 +4,12 @@ addpath(genpath('include/'));
 s = RandStream('mt19937ar','Seed',1);
 RandStream.setGlobalStream(s); 
 
-data_on = true; % data_on = false;
-model = 'sv'; % 'svt'
+% data_on = true; 
+data_on = false;
+model = 'sv2'; % 'svt'
 
 %% NAIS control parameters
-cont = NAIS_control(data_on);
+cont = NAIS_control(data_on, model);
 
 %% Observations
 if data_on % Use data
@@ -20,22 +21,28 @@ if data_on % Use data
 else % Simulation
     if strcmp(model, 'sv')
 %         par_SV_sim = [0.5, 0.98, 0.15^2];
-        par_SV_sim = [-10, 0.95, 0.25]; 
+%         par_SV_sim = [-10, 0.95, 0.25]; 
+        par_SV_sim = [0.5, 0.995, 0.9, 0.005, 0.05];
     else
         par_SV_sim = [0.5, 0.98, 0.15^2, 10];
     end
     n = 5000;
-    y = sim_volatility(par_SV_sim,n); % simulated daily log-returns
+    [y, theta, alpha] = sim_volatility(par_SV_sim, n, cont); % simulated daily log-returns
+y = theta + randn(n,1);
 end
 
 %% Initialisation 
-options=optimset('display','iter','TolFun',1e-5,'LargeScale','off','TolX',1e-5,'maxiter',500,'HessUpdate','bfgs','FinDiffType','central');
+options = optimset('display','iter','TolFun',1e-5,'LargeScale','off','TolX',1e-5,'maxiter',500,'HessUpdate','bfgs','FinDiffType','central');
 
 %     par_SV = [c, phi, sigma2_eta, nu]
+        par_SV_init = par_SV_sim;
+        par_SV = par_SV_sim;
+        par_NAIS = par_NAIS_init;
 if strcmp(model,'sv')
-    par_SV_init = [  0.9080    0.8910    0.0044];
+%     par_SV_init = [  0.9080    0.8910    0.0044];
+    par_SV_init = [  0.9080    0.8910    0.0044;
+        NaN, 0.86 0.01];
 %         par_SV_init = [0.5, 0.98, 0.15^2];
-%         par_SV_init = par_SV_sim;
 %         par_SV_init = [0.1, 0.97, 0.03];
 else
     par_SV_init = [0.5, 0.98, 0.15^2, 10];
