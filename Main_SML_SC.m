@@ -47,7 +47,7 @@ else
 end
 
 options = optimset('display','iter','TolFun',1e-5,'LargeScale','off','TolX',1e-5,'maxiter',500,'HessUpdate','bfgs','FinDiffType','central');
-fn_jacobian = @(xx) jacobian_ss(xx); % Jacobian of the parameter tranformation to get standard errors of the orignal parameters
+fn_jacobian = @(xx) jacobian_ss(xx, cont); % Jacobian of the parameter tranformation to get standard errors of the orignal parameters
 RND = randn(T,cont.S/2);   % normal random numbers; used in SimSmooth, for S/2 simulation paths; 
 
 %% Optimisation    

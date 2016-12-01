@@ -10,6 +10,7 @@ model = 'sv2'; % 'svt'
 
 %% NAIS control parameters
 cont = NAIS_control(data_on, model);
+cont.print = true;
 
 %% Observations
 if data_on % Use data
@@ -19,7 +20,7 @@ if data_on % Use data
     y = 100*y;
     n = length(y);
 else % Simulation
-    if strcmp(model, 'sv')
+    if strcmp(cont.err, 'n')
 %         par_SV_sim = [0.5, 0.98, 0.15^2];
 %         par_SV_sim = [-10, 0.95, 0.25]; 
         par_SV_sim = [0.5, 0.995, 0.9, 0.005, 0.05];
@@ -28,7 +29,7 @@ else % Simulation
     end
     n = 5000;
     [y, theta, alpha] = sim_volatility(par_SV_sim, n, cont); % simulated daily log-returns
-y = theta + randn(n,1);
+% y = theta + randn(n,1); % to check multi KFS
 end
 
 %% Initialisation 
@@ -38,17 +39,16 @@ options = optimset('display','iter','TolFun',1e-5,'LargeScale','off','TolX',1e-5
         par_SV_init = par_SV_sim;
         par_SV = par_SV_sim;
         par_NAIS = par_NAIS_init;
-if strcmp(model,'sv')
+if strcmp(cont.err, 'n')
 %     par_SV_init = [  0.9080    0.8910    0.0044];
-    par_SV_init = [  0.9080    0.8910    0.0044;
-        NaN, 0.86 0.01];
+    par_SV_init = [0.9080 0.8910 0.86 0.0044 0.01];
 %         par_SV_init = [0.5, 0.98, 0.15^2];
 %         par_SV_init = [0.1, 0.97, 0.03];
 else
     par_SV_init = [0.5, 0.98, 0.15^2, 10];
 end
 
-fn_jacobian = @(xx) jacobian_ss(xx); % Jacobian of the parameter tranformation to get standard errors of the orignal parameters
+fn_jacobian = @(xx) jacobian_ss(xx, cont); % Jacobian of the parameter tranformation to get standard errors of the orignal parameters
     
 %% Optimisation    
 % Uncommnet the loop if MC replications of SML required

@@ -3,9 +3,9 @@ function [lnL_hat, theta_smooth] = NAIS_loglik_copula(par_SC_trans, par_NAIS, y,
     % (with antithetic variables for variance reduction)
     d = size(par_SC_trans,2);
     n = size(y,1);
-    par_SC =  transform_param_ss(par_SC_trans, [cont.data_on,'_back']);
+    par_SC =  transform_param_ss(par_SC_trans, [cont.data_on,'_back'], cont);
 
-    if (d == 4)
+    if strcmp(cont.err,'t')
         nu = par_SC(1,4);
         y = tinv(y,nu);
     end
@@ -55,10 +55,10 @@ function [lnL_hat, theta_smooth] = NAIS_loglik_copula(par_SC_trans, par_NAIS, y,
         rho_sim = transf(theta_sim);
         
         % compute the logweights
-        if (d == 3) % if (cont.err == 'n')
+        if strcmp(cont.err,'n')
             lnP = - 0.5*log(1-rho_sim.^2) - 0.5*(repmat(y(:,1).^2,1,S) + repmat(y(:,2).^2,1,S)...
                 - 2*rho_sim.*repmat(y(:,1).*y(:,2),1,S))./(1-rho_sim.^2) + 0.5*repmat(y(:,1).^2 + y(:,2).^2,1,S);               
-        else % if cont.err == 't'
+        else % if strcmp(cont.err,'t')
             Y1 = repmat(y(:,1),1,S);
             Y2 = repmat(y(:,2),1,S);
             

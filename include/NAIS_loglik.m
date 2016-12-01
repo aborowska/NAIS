@@ -3,7 +3,7 @@ function [lnL_hat, theta_smooth] = NAIS_loglik(par_SV_trans, par_NAIS, y, S, con
     % (with antithetic variables for variance reduction)
 %     d = size(par_SV_trans,2);    
     n = length(y);
-    par_SV =  transform_param_ss(par_SV_trans, [cont.data_on,'_back']);
+    par_SV =  transform_param_ss(par_SV_trans, [cont.data_on,'_back'], cont);
     
     if cont.print
         fprintf('%6.4f\t',par_SV); 

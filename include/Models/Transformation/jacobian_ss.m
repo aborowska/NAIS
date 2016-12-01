@@ -1,12 +1,18 @@
-function jaco_inv = jacobian_sv(param_trans)
+function jaco_inv = jacobian_ss(param_trans, cont)
 % Jacobian of the parameter tranformation to get standard errors of the orignal parameters
     
-    d = size(param_trans,2);
+    m = cont.states;
     
-    if (d == 4)
-        jaco_inv = diag([1, (1+exp(param_trans(1,2)))*(1+exp(-param_trans(1,2))), 1/(exp(param_trans(1,3))), 1/(exp(param_trans(1,4)))]);
-    else
-        jaco_inv = diag([1, (1+exp(param_trans(1,2)))*(1+exp(-param_trans(1,2))), 1/(exp(param_trans(1,3)))]);
+    phis = param_trans(:,2:2+m-1);
+    sigmas = param_trans(:,2+m:2+2*m-1);
+    if strcmp(cont.err,'t')
+        nus = param_trans(1,2+2*m:end);
+    end
+    
+    jaco_inv = diag([1, (1+exp(phis)).*(1+exp(-phis)), 1./(exp(sigmas))]);
+
+    if strcmp(cont.err, 't')
+        jaco_inv = blkdiag(jaco_inv,diag(1./(exp(nus))));
     end
 end
  

@@ -1,8 +1,8 @@
 function par_NAIS = NAIS_param_copula(par_NAIS, y, par_SC, cont)
     % Algorithm 2: Efficient importance parameters using NAIS
-    d = size(par_SC,2);
+%     d = size(par_SC,2);
     n = size(y,1);
-    Un = ones(n,1);
+%     Un = ones(n,1);
       
     M = cont.M;         % number of the Gauss-Hermite nodes
     tol = cont.tol;     % convergence tolerance
@@ -12,12 +12,12 @@ function par_NAIS = NAIS_param_copula(par_NAIS, y, par_SC, cont)
     w = sqrt(h);
     iter_max = cont.iter_max;                    
 
-    Um = ones(M,1);
+%     Um = ones(M,1);
     
     err = 1;
     iter = 0;
     
-    if (d == 4)
+    if strcmp(cont.err,'t')
         nu = par_SC(1,4);
  %         pdf_const = log(gamma((nu+1)/2)) - log(gamma(nu/2)) - 0.5*log(nu-2);
     else
@@ -35,6 +35,7 @@ function par_NAIS = NAIS_param_copula(par_NAIS, y, par_SC, cont)
         % and smoothed variance V_smooth based on b, C from previous
         % iteration and the linear SSM using KFS
 
+%% Non-MEXed version
 %         b_new = 0*Un;
 %         C_new = 1*Un;
 %         for ii = 1:n
@@ -81,6 +82,7 @@ function par_NAIS = NAIS_param_copula(par_NAIS, y, par_SC, cont)
 %              
 %         end
 
+%% MEXed version
         [b_new, C_new] = EIS_reg_vec_copula(y, theta_smooth, V_smooth, ...
             z, w, tol_C, nu, cont.link);
         
@@ -92,6 +94,7 @@ function par_NAIS = NAIS_param_copula(par_NAIS, y, par_SC, cont)
         par_NAIS.C = C_new;
         iter = iter + 1;
     end
+    
     if cont.print
         fprintf('NAIS_param iter #: %d.\n', iter)
     end

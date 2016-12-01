@@ -8,7 +8,7 @@ function [par_SV, hessian, hessian_tr, theta_smooth] = estimate_NAIS(par_SV_init
     par_NAIS = NAIS_param(par_NAIS_init, y, par_SV_init, cont); % Algorithm 2: Efficient importance parameters via NAIS
 
     %% MAIN optimisation
-    par_SV_init_trans = transform_param_ss(par_SV_init,  [cont.data_on,'_opt']);
+    par_SV_init_trans = transform_param_ss(par_SV_init,  [cont.data_on,'_opt'], cont);
     NAIS_max = @(xx) NAIS_loglik(xx, par_NAIS, y, cont.S, cont, RND);
     
     [par_SV_trans,~,~,~,~, hessian]= fminunc(NAIS_max, par_SV_init_trans, options);
@@ -20,6 +20,6 @@ function [par_SV, hessian, hessian_tr, theta_smooth] = estimate_NAIS(par_SV_init
         [~, theta_smooth] = NAIS_max(par_SV_trans);
     end
     
-    par_SV = transform_param_ss(par_SV_trans,  [cont.data_on,'_back']);
+    par_SV = transform_param_ss(par_SV_trans,  [cont.data_on,'_back'], cont);
 
 end
